@@ -3,17 +3,16 @@
 VERSION=$1
 
 cd "$(dirname "$0")"
-. .env
 
-if [[ -f $VERSIONDIR/phplist-${VERSION}.tgz ]]; then
+if [[ -n $VERSION ]]; then
     docker rmi -f phplist/phplist:$VERSION
     docker system prune -f
-    tar zxf $VERSIONDIR/phplist-${VERSION}.tgz 
-    docker build --build-arg VERSION=$VERSION --no-cache -f Dockerfile -t phplist/phplist:$VERSION .
-    docker push phplist/phplist:$VERSION
-    rm -rf phplist-${VERSION}
+    docker build --build-arg PHPLIST_VERSION=$VERSION --no-cache --pull -f Dockerfile -t phplist/phplist:$VERSION .
+#    docker push phplist/phplist:$VERSION
 else
     docker rmi -f phplist/phplist:latest
-    docker build --no-cache -f Dockerfile.git -t phplist/phplist:latest .
-    docker push phplist/phplist:latest
+    #docker build --no-cache -f Dockerfile.git -t phplist/phplist:latest .
+    docker build -f Dockerfile.git -t phplist/phplist:latest .
+#    docker push phplist/phplist:latest
 fi
+
