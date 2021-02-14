@@ -56,6 +56,13 @@ if version_greater "$image_version" "$installed_version"; then
       env_var_value=`eval "echo ${temp_var}"`
       sed -i "s|##${env_var}##|${env_var_value}|" /var/www/html/config/config.php
     done
+    # we check that all variables are replaced
+    nb_lines=$(grep '##PHPLIST_' /var/www/html/config/config.php | wc -l)
+    if [ ${nb_lines} -ne 0 ]; then
+      echo "ERROR: missing environment variables. Aborting !!!"
+      grep '##PHPLIST_' /var/www/html/config/config.php
+      exit 1
+    fi
   fi
 
   # we copy the default config for reference in case of update
